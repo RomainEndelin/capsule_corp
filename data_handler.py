@@ -19,13 +19,27 @@ def analyze_sensor_event(sensor, event):
         log.info("Engine '%s' - Inferred: %s" % (name, engine(event)))
 
 
-def route_messages(mosq, obj, msg):
+def route_messages(mosquitto, obj, msg):
+    """
+    This is the on_message callback
+    It will parse msg.topic, and call the proper function accordingly
+    """
     log.debug("Message received on topic %s with QoS %s and payload %s"
               % (msg.topic, str(msg.qos), msg.payload))
+
+    # Retrieving the content of the message
+    # convert it from bytes to string
+    # and then convert it to a json object
     data = json.loads(msg.payload.decode('utf-8'))
+
+    # spliting the topic into an array
     parsed_topic = msg.topic.split('/')
+    # here, the category (sensor, item...) is the former last element
     category = parsed_topic[-2]
+    # and the designation (A1...) is the last element
     subject = parsed_topic[-1]
+
+    # now, we parse by category
     if category == "sensor":
         log.info("Sensor '%s' sends %s" % (subject, data))
         analyze_sensor_event(subject, data)
