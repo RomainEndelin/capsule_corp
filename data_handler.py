@@ -19,26 +19,7 @@ def analyze_sensor_event(sensor, event):
         log.info("Engine '%s' - Inferred: %s" % (name, engine(event)))
 
 
-def route_messages(mosquitto, obj, msg):
-    """
-    This is the on_message callback
-    It will parse msg.topic, and call the proper function accordingly
-    """
-    log.debug("Message received on topic %s with QoS %s and payload %s"
-              % (msg.topic, str(msg.qos), msg.payload))
-
-    # Retrieving the content of the message
-    # convert it from bytes to string
-    # and then convert it to a json object
-    data = json.loads(msg.payload.decode('utf-8'))
-
-    # spliting the topic into an array
-    parsed_topic = msg.topic.split('/')
-    # here, the category (sensor, item...) is the former last element
-    # and the designation (A1...) is the last element
-    (category, subject) = parsed_topic[-2:]
-
-    # now, we parse by category
+def route_message(category, subject, data):
     if category == "sensor":
         log.info("Sensor '%s' sends %s" % (subject, data))
         analyze_sensor_event(subject, data)
@@ -53,11 +34,26 @@ def route_messages(mosquitto, obj, msg):
         pass  # TODO Store person activities, so we can check the inferences
 
 
+def on_message(mosquitto, obj, msg):
+    log.debug("Message received on topic %s with QoS %s and payload %s"
+              % (msg.topic, str(msg.qos), msg.payload))
+
+    # Retrieving the content of the message as a json object
+    data = json.loads(msg.payload.decode('utf-8'))
+
+    parsed_topic = msg.topic.split('/')
+    # category: sensor, item...
+    # designation: A1...
+    (category, subject) = parsed_topic[-2:]
+
+    route_message(category, subject, data)
+
+
 def main():
     client = mosquitto.Mosquitto("test-client")
     client.connect("127.0.0.1", port=8000)
     client.subscribe("house/2/simu/+/+", 1)
-    client.on_message = route_messages
+    client.on_message = on_message
     client.loop_forever()
     # TODO Add some engines
     # * Thibaut's inference
