@@ -35,9 +35,8 @@ def route_messages(mosquitto, obj, msg):
     # spliting the topic into an array
     parsed_topic = msg.topic.split('/')
     # here, the category (sensor, item...) is the former last element
-    category = parsed_topic[-2]
     # and the designation (A1...) is the last element
-    subject = parsed_topic[-1]
+    (category, subject) = parsed_topic[-2:]
 
     # now, we parse by category
     if category == "sensor":
