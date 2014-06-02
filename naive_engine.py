@@ -8,9 +8,9 @@ def naive_guess(event):
         elif event['attachement'] == 'Bedroom':
             activity = 'Sleep'
         elif event['attachement'] == 'Toilet':
-            activity = 'Go Toilet'
+            activity = 'Go toilet'
         elif event['attachement'] == 'Kitchen':
-            activity = 'Take Meal'
+            activity = 'Take a meal'
         activities.append(activity)
     else:
         activity = activities[-1] if activities else None
