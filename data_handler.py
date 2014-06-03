@@ -43,7 +43,6 @@ def feedback():
 
     inference_cols = [col for col in results.columns
                       if col not in ['ground_truth']]
-
     func_score = (lambda x:
                   len(x[x == results['ground_truth']]) / float(len(x)))
     scores = results[inference_cols].apply(func_score)
@@ -108,7 +107,6 @@ def main():
     # * HMM
     # * Markov Logic Chain
     # TODO Include statistical/reinforcement datasets
-    # TODO Stop the loop at the end of the simulation, and perform statistics
 
 if __name__ == '__main__':
     main()
