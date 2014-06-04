@@ -1,7 +1,7 @@
 from rdflib import Literal
 from rdflib.namespace import RDF
 
-from semantic_engine.cogitation import graph, qol, home
+from capsule_corp.semantic_engine.cogitation import graph, qol, home
 
 
 TIME_WINDOW = 1 * 60 * 1000

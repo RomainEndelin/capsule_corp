@@ -4,8 +4,8 @@ import logging
 import pandas as pd
 from pandas.tseries import offsets
 
-from naive_engine import naive_guess
-from semantic_engine.cogitation import infer_from_ontology
+from capsule_corp.naive_engine import naive_guess
+from capsule_corp.semantic_engine.cogitation import infer_from_ontology
 
 
 log = logging.getLogger('test')

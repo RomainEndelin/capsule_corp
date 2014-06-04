@@ -2,7 +2,7 @@ import glob
 import subprocess
 from rdflib import Graph, Namespace, Literal
 
-from semantic_engine import estimate_motion
+from capsule_corp.semantic_engine import motion_estimator
 
 
 DUMP_FILE = 'dump-ubi.n3'
@@ -77,7 +77,7 @@ def read_activity():
 
 def infer_from_ontology(event):
     save_to_ontology(event)
-    estimate_motion()
+    motion_estimator.estimate_motion()
     think()
     save()
     return read_activity()

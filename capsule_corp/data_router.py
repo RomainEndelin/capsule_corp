@@ -3,7 +3,7 @@ import logging
 import json
 from datetime import datetime
 
-import data_processing as dp
+from capsule_corp import data_processing as dp
 
 
 log = logging.getLogger('test')
@@ -47,7 +47,7 @@ def on_message(mosquitto, obj, msg):
     route_message(category, subject, data)
 
 
-def main():
+def router():
     client = mosquitto.Mosquitto("test-client")
     client.connect("127.0.0.1", port=8000)
     client.subscribe("house/2/simu/+/+", 1)
@@ -67,6 +67,3 @@ def main():
     # * HMM
     # * Markov Logic Chain
     # TODO Include statistical/reinforcement datasets
-
-if __name__ == '__main__':
-    main()
