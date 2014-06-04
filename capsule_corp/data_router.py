@@ -47,7 +47,7 @@ def on_message(mosquitto, obj, msg):
     route_message(category, subject, data)
 
 
-def router():
+def start():
     client = mosquitto.Mosquitto("test-client")
     client.connect("127.0.0.1", port=8000)
     client.subscribe("house/2/simu/+/+", 1)

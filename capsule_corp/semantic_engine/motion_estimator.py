@@ -1,7 +1,7 @@
 from rdflib import Literal
 from rdflib.namespace import RDF
 
-from capsule_corp.semantic_engine.cogitation import graph, qol, home
+from capsule_corp.semantic_engine.ontology import graph, qol, home
 
 
 TIME_WINDOW = 1 * 60 * 1000
@@ -28,8 +28,15 @@ class Sensor(object):
 #  INIT
 house = graph.value(predicate=RDF.type, object=qol['House'])
 
-rooms = {s: Room(s)
-         for s in graph.subjects(None, RDF.type, qol['Room'])}
+room_query = graph.query(
+    """SELECT DISTINCT ?room
+    WHERE {
+        ?room rdf:type ?class .
+        ?class rdfs:subClassOf* qol:Room .
+    }""",
+    initNs={'qol': qol})
+rooms = {row.room: Room(row.room)
+         for row in room_query}
 
 sensor_query = graph.query(
     "SELECT DISTINCT ?sensor ?room WHERE { ?sensor qol:deployedIn ?room . }",
@@ -39,6 +46,7 @@ sensors = {row.sensor: Sensor(row.sensor, rooms[row.room])
 
 
 def estimate_motion():
+    """Saves the motion level of the patient into the ontology"""
     clock = graph.value(home['clock'], qol['hasValue'])
 
     # set the room motions in the window frame
@@ -66,5 +74,5 @@ def estimate_motion():
         graph.set((uri, qol['motionMeasured'], Literal(room.motion)))
 
     # update the ontology with the house motion
-    home_motion = sum([room.motion for room in room.values()])
+    home_motion = sum([room.motion for room in rooms.values()])
     graph.set((house, qol['motionMeasured'], Literal(home_motion)))

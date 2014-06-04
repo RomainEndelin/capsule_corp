@@ -105,17 +105,31 @@ home:calendar a qol:Sensor;
 
 
 # Activities #
-home:getUp a qol:Activity.
-home:goToilet a qol:Activity.
-home:hygiene a qol:Activity.
-home:cookMeal a qol:Activity.
-home:eatMeal a qol:Activity.
-home:clearMeal a qol:Activity.
-home:occupied a qol:Activity.
-home:sleep a qol:Activity.
-home:nap a qol:Activity.
-home:getOut a qol:Activity.
-home:runAway a qol:Deviance.
-home:comeHome a qol:Activity.
-home:fall a qol:Deviance.
-home:socialize a qol:Activity.
+home:getUp a qol:Activity;
+    rdfs:label """Get up"""@en.
+home:goToilet a qol:Activity;
+    rdfs:label """Go toilet"""@en.
+home:hygiene a qol:Activity;
+    rdfs:label """Having shower"""@en.
+home:cookMeal a qol:Activity;
+    rdfs:label """Cook a meal"""@en.
+home:eatMeal a qol:Activity;
+    rdfs:label """Take a meal"""@en.
+home:clearMeal a qol:Activity;
+    rdfs:label """Clean the meal"""@en.
+home:occupied a qol:Activity;
+    rdfs:label """Occupied"""@en.
+home:sleep a qol:Activity;
+    rdfs:label """Sleep"""@en.
+home:nap a qol:Activity;
+    rdfs:label """Have a nap"""@en.
+home:goOut a qol:Activity;
+    rdfs:label """Go out"""@en.
+home:runAway a qol:Deviance;
+    rdfs:label """Run away"""@en.
+home:comeHome a qol:Activity;
+    rdfs:label """Come home"""@en.
+home:fall a qol:Deviance;
+    rdfs:label """Fall"""@en.
+home:socialize a qol:Activity;
+    rdfs:label """Socialize"""@en.
