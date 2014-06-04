@@ -1,0 +1,119 @@
+@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd:	<http://www.w3.org/2001/XMLSchema#>.
+@prefix log:	<http://www.w3.org/2000/10/swap/log#>.
+@prefix math: 	<http://www.w3.org/2000/10/swap/math#>.
+@prefix dt:     <http://buzzword.org.uk/2011/functions/datetime#>.
+@prefix func: 	<http://www.w3.org/2007/rif-builtin-function#>.
+@prefix e: 	<http://eulersharp.sourceforge.net/2003/03swap/log-rules#>.
+
+@prefix qol: 	<load-model#>.
+@prefix hom:	<load-home#>.
+@prefix unc: 	<load-uncertainty#>.
+@prefix ts: 	<infer-triplestore#>.
+@prefix :	<infer-qol#>.
+
+
+
+:getScore a rdf:DatatypeProperty;
+	rdfs:comment "Indicates that a rule is in favor of recognizing an activity with a score."@en;
+	rdfs:comment "the score should be from -10 to 10."@en;
+	rdfs:domain qol:Activity;
+	rdfs:range xsd:int.
+	
+:getFinalScore a rdf:DatatypeProperty;
+	rdfs:comment "Computed total score over all single-rule scores."@en;
+	rdfs:domain qol:Activity;
+	rdfs:range xsd:int.
+	
+	
+
+## RULES ##
+## ----- ##
+
+# update uncertainty of resident location after each event
+{?se qol:hasCurrentState [ a unc:Uncertainty; unc:uncertaintyLevel ?n; unc:relatedObject ?st]. ?se qol:hasLastUpdate true. ?st qol:indicateLocation true. ?se qol:deployedIn ?r. ?r qol:partOf ?h. ?u qol:liveIn ?h} => {ts:n3store ts:update {?u qol:detectedIn [ a unc:Uncertainty; unc:uncertaintyLevel ?n; unc:relatedObject ?r; unc:accordingTo ?se]}}.
+
+# update resident location (without uncertainty) after each event
+{?se qol:hasCurrentState ?st. ?se qol:hasLastUpdate true. ?st qol:indicateLocation true. ?se qol:deployedIn ?r. ?r qol:partOf ?h. ?u qol:liveIn ?h} => {ts:n3store ts:update {?u qol:detectedIn ?r}}.
+
+# update durantion spent in each room with uncertainty [persistent]
+{?se qol:hasCurrentState [ a unc:Uncertainty; unc:uncertaintyLevel ?n; unc:relatedObject ?st]. ?se qol:hasLastUpdate true. ?st qol:indicateLocation true. ?se qol:deployedIn ?r. ?r qol:partOf ?h. ?u qol:liveIn ?h. ?u qol:detectedIn [ a unc:Uncertainty; unc:uncertaintyLevel ?n2; unc:relatedObject ?r2]. ?r log:notEqualTo ?r2. ?se qol:lastUpdate ?t} => {ts:n3store ts:update {?u qol:cameFrom ?r2. ?u qol:inRoomSince ?t}}.
+
+# update durantion spent in each room without uncertainty [persistent]
+{?se qol:hasCurrentState ?st. ?se qol:hasLastUpdate true. ?st qol:indicateLocation true. ?se qol:deployedIn ?r. ?r qol:partOf ?h. ?u qol:liveIn ?h. ?u qol:detectedIn ?r2. ?r log:notEqualTo ?r2. ?se qol:lastUpdate ?t} => {ts:n3store ts:update {?u qol:cameFrom ?r2. ?u qol:inRoomSince ?t}}.
+
+# infer durations [live]
+{?since qol:hasDurationEquivalent ?for. ?x ?since ?start. hom:clock qol:hasValue ?now. (?now ?start) math:difference ?duration} => {ts:n3store ts:update {?x ?for ?duration}}.
+
+# detects if resident goes outside with uncertainty [persistent]
+{?u qol:liveIn ?h. ?h qol:motionMeasured 0. ?d a qol:Door. ?d qol:notUsedFor ?du. ?du math:lessThan 300. ?u qol:detectedIn ?r. ?o a qol:Outside. ?d qol:lastUsed ?t} => {ts:n3store ts:update {?u qol:detectedIn [ a unc:Uncertainty; unc:uncertaintyLevel 100; unc:relatedObject ?o]. ?u qol:cameFrom ?r. ?u qol:inRoomSince ?t}}.
+
+# detects if resident goes outside [persistent]
+{?u qol:liveIn ?h. ?h qol:motionMeasured 0. ?d a qol:Door. ?d qol:notUsedFor ?du. ?du math:lessThan 300. ?u qol:detectedIn ?r. ?o a qol:Outside. ?d qol:lastUsed ?t} => {ts:n3store ts:update {?u qol:detectedIn ?o. ?u qol:cameFrom ?r. ?u qol:inRoomSince ?t}}.
+
+# tracks usage of objects [live + persistent]
+{?se qol:hasCurrentState ?st. ?st qol:indicateUse true. ?se qol:attachedTo ?o. ?o qol:locatedIn ?h. ?u qol:liveIn ?h. ?se qol:lastUpdate ?t} => {?u qol:useNow ?o}.
+{?se qol:hasCurrentState ?st. ?se qol:hasLastUpdate true. ?se qol:attachedTo ?o. ?se qol:lastUpdate ?t} => {ts:n3store ts:update{?o qol:lastUsed ?t}}.
+
+
+## ACTIVITY RECOGNITION (SCORE SYSTEM) ##
+## ----------------------------------- ##
+
+# get up (fixed to 10 minutes)
+{?u qol:believedToDo hom:sleep. ?u qol:doesActivityFor ?d. ?d math:notLessThan 3600. ?u qol:detectedIn ?r. ?r qol:motionMeasured ?m. ?m math:notLessThan 3} => {hom:getUp :getScore 8}.
+{?u qol:believedToDo hom:getUp. ?u qol:doesActivityFor ?d. ?d math:lessThan 600} => {hom:getUp :getScore 5}.
+
+# go to the toilet (limited to 10 minutes)
+{?u qol:detectedIn ?r. ?r a qol:Toilet. ?u qol:inRoomFor ?d. ?d math:lessThan 600} => {hom:goToilet :getScore 7}.
+
+# hygiene activities (limited to 30 minutes)
+{?u qol:detectedIn ?r. ?r a qol:Bathroom. ?u qol:inRoomFor ?d. ?d math:lessThan 1800} => {hom:hygiene :getScore 9}.
+
+# cook
+#{false} => {hom:cookMeal :getScore 0}.
+
+# have meal
+#{false} => {hom:eatMeal :getScore 0}.
+
+# clear table and wash dishes
+#{false} => {hom:clearMeal :getScore 0}.
+
+# be busy (max 18h)
+{?u qol:liveIn ?h. ?h qol:motionMeasured ?m. ?m math:notLessThan 0} => {hom:occupied :getScore 2}.
+{?u qol:believedToDo hom:occupied. ?u qol:doesActivityFor ?d. ?d math:notLessThan 64800} => {hom:occupied :getScore -2}.
+
+# sleep (max 8h)
+{?u qol:detectedIn ?r. ?r a qol:Bedroom. ?u qol:inRoomFor ?d. ?d math:notLessThan 600. ?r qol:motionMeasured ?m. ?m math:lessThan 2} => {hom:sleep :getScore 6}.
+{?u qol:believedToDo hom:sleep. ?u qol:doesActivityFor ?d. ?d math:notLessThan 28800} => {hom:sleep :getScore -4}.
+
+# take a nap (max 3h)
+{?u qol:detectedIn ?r. ?r a qol:Livingroom. ?u qol:inRoomFor ?d. ?d math:notLessThan 600. ?r qol:motionMeasured ?m. ?m math:lessThan 2} => {hom:nap :getScore 6}.
+{?u qol:believedToDo hom:nap. ?u qol:doesActivityFor ?d. ?d math:notLessThan 10800} => {hom:nap :getScore -4}.
+
+# go out of home (max 5h, see run away rule)
+{?u qol:detectedIn ?o. ?o a qol:Outside} => {hom:goOut :getScore 6}.
+
+# come home (fixed to 10 minutes)
+{?u qol:believedToDo hom:getOut. ?u qol:useNow ?o. ?o a qol:Door} => {hom:comeHome :getScore 5}.
+{?u qol:believedToDo hom:comeHome. ?u qol:doesActivityFor ?d. ?d math:lessThan 600} => {hom:comeHome :getScore 5}.
+
+# run away
+{?u qol:useNow ?d. ?d a qol:Door. hom:clock qol:hasValue ?t. ?t func:hours-from-dateTime ?h. ?h math:notLessThan 22. ?h math:lessThan 7} => {hom:runAway :getScore 9}.
+{?u qol:detectedIn ?o. ?o a qol:Outside. ?u qol:inRoomFor ?d. ?d math:notLessThan 18000} => {hom:runAway :getScore 9}.
+
+# fall
+{?u qol:believedToDo hom:nothing. ?u qol:doesActivityFor ?d. ?d math:notLessThan 600} => {hom:fall :getScore 8}.
+
+# meet people at home
+{?u qol:isAlone false} => {hom:socialize :getScore 8}.
+
+
+# must add scores and give confidence, if nothing up a given threshold then believe in hom:nothing!
+{?a :getScore ?x. ?SCOPE e:findall (?sc {?a :getScore ?sc} ?list). ?list math:sum ?total} => {?a :getFinalScore ?total}.
+{?SCOPE e:findall (?sc {?a :getScore ?sc} ?list). ?list math:sum ?grandtotal. ?grandtotal math:lessThan 1} => {hom:nothing :getScore 10}.
+{?SCOPE e:findall (?sc {?a :getFinalScore ?sc} ?list). ?list math:sum ?grandtotal. ?grandtotal math:notLessThan 0.1. ?a0 :getFinalScore ?fs. (?fs ?grandtotal) math:quotient ?cs} => {?a0 qol:getRBConfidenceScore ?cs}.
+
+# infer most probable activity 
+{?SCOPE e:findall (?rbc {?a qol:getRBConfidenceScore ?rbc} ?list). ?list e:max ?maxrbc. ?a qol:getRBConfidenceScore ?maxrbc. ?u qol:liveIn ?h. hom:clock qol:hasValue ?now. ?u qol:believedToDo ?a0. ?a log:notEqualTo ?a0} => {ts:n3store ts:update {?u qol:believedToDo ?a. ?u qol:doesActivitySince ?now}}.

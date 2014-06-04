@@ -1,0 +1,25 @@
+@prefix rdf:  	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: 	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:  	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd: 	<http://www.w3.org/2001/XMLSchema#>.
+@prefix log:	<http://www.w3.org/2000/10/swap/log#>.
+
+@prefix ts: 	<infer-triplestore#>.
+
+ts:TripleStore a rdfs:Class.
+ts:n3store a ts:TripleStore.
+
+ts:update a rdf:ObjectProperty;
+	rdfs:comment "update triple information."@en;
+	rdfs:domain ts:TripleStore;
+	rdfs:range log:Formula.
+
+ts:add a rdf:ObjectProperty;
+	rdfs:comment "add triple information."@en;
+	rdfs:domain ts:TripleStore;
+	rdfs:range log:Formula.
+
+ts:remove a rdf:ObjectProperty;
+	rdfs:comment "remove triple information."@en;
+	rdfs:domain ts:TripleStore;
+	rdfs:range log:Formula.

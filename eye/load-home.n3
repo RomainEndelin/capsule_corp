@@ -1,0 +1,121 @@
+@prefix rdf:  	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: 	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd: 	<http://www.w3.org/2001/XMLSchema#>.
+
+@prefix qol: 	<load-model#>.
+@prefix home:	<load-home#>.
+
+
+
+## GENERATED DATA ##
+## -------------- ##
+
+# House #
+home:johndoe a qol:Resident;
+	qol:liveIn home:house1203001.
+
+home:france a qol:Environment.
+home:notAtHome a qol:Outside;
+	qol:partOf home:france.
+home:house1203001 a qol:House;
+	qol:partOf home:france.
+
+home:livingroom a qol:Livingroom;
+	qol:partOf home:house1203001.
+home:bedroom a qol:Bedroom;
+	qol:partOf home:house1203001.
+home:toilet a qol:Toilet;
+	qol:partOf home:house1203001.
+home:kitchen a qol:Kitchen;
+	qol:partOf home:house1203001.
+home:maindoor a qol:Door;
+	qol:locatedIn home:house1203001.
+home:backdoor a qol:Door;
+	qol:locatedIn home:house1203001.
+
+# Sensors #
+home:pir a qol:SensorType.
+
+home:a1_on a qol:SensorState;
+	qol:indicateLocation true.
+home:a1_off a qol:SensorState.
+home:a1 a qol:Sensor;
+	qol:type home:pir;
+	qol:deployedIn home:livingroom;
+	qol:hasPossibleState home:a1_on;
+	qol:hasPossibleState home:a1_off.
+
+home:a2_on a qol:SensorState;
+	qol:indicateLocation true.
+home:a2_off a qol:SensorState.
+home:a2 a qol:Sensor;
+	qol:type home:pir;
+	qol:deployedIn home:toilet;
+	qol:hasPossibleState home:a2_on;
+	qol:hasPossibleState home:a2_off.
+
+home:a3_on a qol:SensorState;
+	qol:indicateLocation true.
+home:a3_off a qol:SensorState.
+home:a3 a qol:Sensor;
+	qol:type home:pir;
+	qol:deployedIn home:kitchen;
+	qol:hasPossibleState home:a3_on;
+	qol:hasPossibleState home:a3_off.
+
+home:a4_on a qol:SensorState;
+	qol:indicateLocation true.
+home:a4_off a qol:SensorState.
+home:a4 a qol:Sensor;
+	qol:type home:pir;
+	qol:deployedIn home:bedroom;
+	qol:hasPossibleState home:a4_on;
+	qol:hasPossibleState home:a4_off.
+
+home:reed a qol:SensorType.
+
+home:B1_normal a qol:SensorState.
+home:B1_alert a qol:SensorState;
+	qol:indicateUse true.
+home:B1 a qol:Sensor;
+	qol:type home:reed;
+	qol:attachedTo home:maindoor;
+	qol:hasPossibleState home:B1_normal;
+	qol:hasPossibleState home:B1_alert.
+
+home:B2_normal a qol:SensorState.
+home:B2_alert a qol:SensorState;
+	qol:indicateUse true.
+home:B2 a qol:Sensor;
+	qol:type home:reed;
+	qol:attachedTo home:backdoor;
+	qol:hasPossibleState home:B2_normal;
+	qol:hasPossibleState home:B2_alert.
+
+home:time a qol:SensorType.
+
+home:clock a qol:Sensor;
+	qol:type home:time.
+
+home:dayOfWeek a qol:SensorType.
+
+home:calendar a qol:Sensor;
+	qol:type home:dayOfWeek.
+
+
+# Activities #
+home:getUp a qol:Activity.
+home:goToilet a qol:Activity.
+home:hygiene a qol:Activity.
+home:cookMeal a qol:Activity.
+home:eatMeal a qol:Activity.
+home:clearMeal a qol:Activity.
+home:occupied a qol:Activity.
+home:sleep a qol:Activity.
+home:nap a qol:Activity.
+home:getOut a qol:Activity.
+home:runAway a qol:Deviance.
+home:comeHome a qol:Activity.
+home:fall a qol:Deviance.
+home:socialize a qol:Activity.

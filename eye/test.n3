@@ -1,0 +1,24 @@
+@prefix rdf:  	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl: 	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd: 	<http://www.w3.org/2001/XMLSchema#>.
+
+@prefix qol: 	<load-model#>.
+@prefix hom:	<load-home#>.
+
+
+## TESTING DATA ##
+## ------------ ##
+hom:clock qol:hasValue "2012-12-12T12:26:04+01:00"^^xsd:dateTime.
+
+hom:johndoe qol:believedToDo hom:occupied;
+	qol:doesActivitySince "2012-12-11T12:24:04+01:00"^^xsd:dateTime;
+	qol:detectedIn hom:salledebain;
+	qol:cameFrom hom:kitchen;
+	qol:inRoomSince "2012-12-11T12:24:27+01:00"^^xsd:dateTime;
+	qol:isAlone true.
+
+hom:salon qol:motionMeasured "1"^^xsd:integer.
+hom:chambre qol:motionMeasured "0"^^xsd:integer.
+hom:salledebain qol:motionMeasured "0"^^xsd:integer.
+hom:house1203003 qol:motionMeasured "1"^^xsd:integer.

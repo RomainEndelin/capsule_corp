@@ -1,0 +1,11 @@
+@prefix ts: <infer-triplestore#>.
+@prefix lgr: <infer-logger#>.
+
+
+## QUERIES ##
+
+# output of changes to be handled by the triplestore
+{ts:n3store ?p ?o} => {ts:n3store ?p ?o}.
+
+# output the triples to be logged
+{?topic lgr:append ?triple} => {?topic lgr:append ?triple}.

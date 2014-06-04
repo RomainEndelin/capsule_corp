@@ -1,0 +1,56 @@
+@prefix rdf:  	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: 	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:  	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd: 	<http://www.w3.org/2001/XMLSchema#>.
+@prefix log:	<http://www.w3.org/2000/10/swap/log#>.
+
+@prefix qol: 	<load-model#>.
+@prefix hom:	<load-home#>.
+@prefix lgr: 	<infer-logger#>.
+@prefix unc:	<load-uncertainty#>.
+
+
+## T-BOX ##
+lgr:Topic a rdfs:Class.
+
+lgr:append a rdf:ObjectProperty;
+	rdfs:comment "mark a triple to be logged on a topic."@en;
+	rdfs:domain lgr:Topic;
+	rdfs:range log:Formula.
+
+
+## TOPICS ##
+lgr:data a lgr:Topic.
+lgr:info a lgr:Topic.
+lgr:rbcdebug a lgr:Topic.
+	
+
+## RULES ##
+
+# data vector (tibo)
+{?se qol:hasValue ?v} => {lgr:data lgr:append {?se qol:hasValue ?v}}.
+{?se qol:hasCurrentState ?st} => {lgr:data lgr:append {?se qol:hasCurrentState ?st}}.
+
+# infered information vector (tibo)
+{hom:clock qol:hasValue ?t} => {lgr:info lgr:append {hom:clock qol:hasValue ?t}}.
+
+{?u qol:detectedIn ?r} => {lgr:info lgr:append {?u qol:detectedIn ?r}}.
+{?u qol:cameFrom ?r} => {lgr:info lgr:append {?u qol:cameFrom ?r}}.
+{?u qol:inRoomSince ?d} => {lgr:info lgr:append {?u qol:inRoomSince ?d}}.
+{?u qol:inRoomFor ?d} => {lgr:info lgr:append {?u qol:inRoomFor ?d}}.
+{?u qol:believedToDo ?a} => {lgr:info lgr:append {?u qol:believedToDo ?a}}.
+{?u qol:doesActivitySince ?d} => {lgr:info lgr:append {?u qol:doesActivitySince ?d}}.
+{?u qol:doesActivityFor ?d} => {lgr:info lgr:append {?u qol:doesActivityFor ?d}}.
+{?u qol:isAlone ?b} => {lgr:info lgr:append {?u qol:isAlone ?b}}.
+{?r qol:motionMeasured ?i} => {lgr:info lgr:append {?r qol:motionMeasured ?i}}.
+
+{?u qol:useNow ?o. ?o a qol:Door} => {lgr:info lgr:append {?u qol:useNow ?o}}.
+#{?u qol:detectedIn ?r. ?r a unc:Uncertainty. ?r unc:uncertaintyLevel ?l. ?r unc:accordingTo ?se. ?r unc:relatedObject ?o} => {lgr:info #lgr:append {?u qol:detectedIn [ a unc:Uncertainty; unc:uncertaintyLevel ?l; unc:relatedObject ?o; unc:accordingTo ?se]}}.
+#{?u qol:detectedIn ?r. ?r a unc:Environment} => {lgr:info lgr:append {?u qol:detectedIn ?r}}.
+
+
+
+
+
+# rule-based clustering debug info
+{?a qol:getRBConfidenceScore ?sc} => {lgr:rbcdebug lgr:append {?a qol:getRBConfidenceScore ?sc}}.

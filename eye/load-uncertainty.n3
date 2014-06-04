@@ -1,0 +1,30 @@
+@prefix rdf:  	<http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: 	<http://www.w3.org/2000/01/rdf-schema#>.
+@prefix owl:  	<http://www.w3.org/2002/07/owl#>.
+@prefix xsd: 	<http://www.w3.org/2001/XMLSchema#>.
+
+@prefix unc: 	<load-uncertainty#>.
+
+## CLASSES ##
+## ------- ##
+
+unc:Uncertainty a rdfs:Class.
+
+## OBJECT PROPERTIES ##
+## ----------------- ##
+
+unc:relatedObject a rdf:ObjectProperty;
+	rdfs:comment "Define the range of the original property without uncertainty."@en;
+	rdfs:domain unc:Uncertainty.
+
+unc:accordingTo a rdf:ObjectProperty;
+	rdfs:comment "Define the range of the original property without uncertainty."@en;
+	rdfs:domain unc:Uncertainty.
+
+
+## DATATYPE PROPERTIES ##
+## ------------------- ##
+unc:uncertaintyLevel a owl:DatatypeProperty;
+	rdfs:comment "define the degree of uncertainty of the property."@en;
+	rdfs:domain unc:Uncertainty;
+	rdfs:range xsd:double.
