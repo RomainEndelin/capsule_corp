@@ -35,63 +35,30 @@ home:backdoor a qol:Door;
 	qol:locatedIn home:house1203001.
 
 # Sensors #
-home:pir a qol:SensorType.
-
-home:a1_on a qol:SensorState;
-	qol:indicateLocation true.
-home:a1_off a qol:SensorState.
-home:a1 a qol:Sensor;
-	qol:type home:pir;
+home:a1 a qol:MotionSensor;
 	qol:deployedIn home:livingroom;
-	qol:hasPossibleState home:a1_on;
-	qol:hasPossibleState home:a1_off.
+    rdfs:label "A1".
 
-home:a2_on a qol:SensorState;
-	qol:indicateLocation true.
-home:a2_off a qol:SensorState.
-home:a2 a qol:Sensor;
-	qol:type home:pir;
+home:a2 a qol:MotionSensor;
 	qol:deployedIn home:toilet;
-	qol:hasPossibleState home:a2_on;
-	qol:hasPossibleState home:a2_off.
+    rdfs:label "A2".
 
-home:a3_on a qol:SensorState;
-	qol:indicateLocation true.
-home:a3_off a qol:SensorState.
-home:a3 a qol:Sensor;
-	qol:type home:pir;
+home:a3 a qol:MotionSensor;
 	qol:deployedIn home:kitchen;
-	qol:hasPossibleState home:a3_on;
-	qol:hasPossibleState home:a3_off.
+    rdfs:label "A3".
 
-home:a4_on a qol:SensorState;
-	qol:indicateLocation true.
-home:a4_off a qol:SensorState.
-home:a4 a qol:Sensor;
-	qol:type home:pir;
+home:a4 a qol:MotionSensor;
 	qol:deployedIn home:bedroom;
-	qol:hasPossibleState home:a4_on;
-	qol:hasPossibleState home:a4_off.
+    rdfs:label "A4".
 
-home:reed a qol:SensorType.
 
-home:B1_normal a qol:SensorState.
-home:B1_alert a qol:SensorState;
-	qol:indicateUse true.
-home:B1 a qol:Sensor;
-	qol:type home:reed;
+home:b1 a qol:DoorSensor;
 	qol:attachedTo home:maindoor;
-	qol:hasPossibleState home:B1_normal;
-	qol:hasPossibleState home:B1_alert.
+    rdfs:label "B1".
 
-home:B2_normal a qol:SensorState.
-home:B2_alert a qol:SensorState;
-	qol:indicateUse true.
-home:B2 a qol:Sensor;
-	qol:type home:reed;
+home:b2 a home:DoorSensor;
 	qol:attachedTo home:backdoor;
-	qol:hasPossibleState home:B2_normal;
-	qol:hasPossibleState home:B2_alert.
+    rdfs:label "B2".
 
 home:time a qol:SensorType.
 

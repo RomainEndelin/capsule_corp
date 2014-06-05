@@ -35,9 +35,7 @@ qol:Furniture a rdfs:Class;
 	rdfs:subClassOf qol:Object.
 qol:Door a rdfs:Class;
 	rdfs:subClassOf qol:Furniture.
-qol:Sensor a rdfs:Class.
-qol:SensorState a rdfs:Class.
-qol:SensorType a rdfs:Class.
+
 qol:Activity a rdfs:Class.
 qol:Deviance a rdfs:Class;
 	rdfs:subClassOf qol:Activity;
@@ -46,6 +44,32 @@ qol:DayOfWeek a rdfs:Class;
 	rdfs:comment "we did not find any equivalent"@en;
 	rdfs:comment "values: Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"@en.
 
+
+##     SENSORS       ##
+## ----------------- ##
+# TODO It may not be the good file to declare the sensors
+qol:Sensor a rdfs:Class.
+qol:SensorState a rdfs:Class.
+
+qol:on a qol:SensorState;
+    rdfs:label "ON";
+	qol:indicateLocation true.
+qol:off a qol:SensorState;
+    rdfs:label "OFF".
+qol:MotionSensor a rdfs:Class;
+    rdfs:subClassOf qol:Sensor;
+    qol:hasPossibleState qol:on;
+    qol:hasPossibleState qol:off.
+
+qol:alert a qol:SensorState;
+    rdfs:label "ALERT";
+	qol:indicateUse true.
+qol:normal a qol:SensorState;
+    rdfs:label "NORMAL".
+qol:DoorSensor a rdfs:Class;
+    rdfs:subClassOf qol:Sensor;
+    qol:hasPossibleState qol:alert;
+    qol:hasPossibleState qol:normal.
 
 
 ## OBJECT PROPERTIES ##
@@ -98,7 +122,7 @@ qol:attachedTo a rdf:ObjectProperty;
 
 qol:hasPossibleState a rdf:ObjectProperty;
 	rdfs:comment "Possible state of a sensor."@en;
-	rdfs:domain qol:Sensor;
+	rdfs:domain qol:Class;
 	rdfs:range qol:SensorState.
 
 qol:type a rdf:ObjectProperty;
